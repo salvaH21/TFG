@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Describe Image</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="../public/js/brain-browser.js"></script>
+    <script src="../public/js/describirImagen.js"></script>
+</head>
+<body>
+    <div class="contenedor">
+        <header>
+            <h1 class="titulo"><a href="/">Descripcion</a></h1>
+        </header>
+        <img id="selectedImage" src="<%= imagePath %>" alt="Selected Image">
+        <pre id="description"></pre>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const imagePath = document.getElementById('selectedImage').src;
+
+            // Registro de imagePath en el cliente
+            console.log('imagePath:', imagePath);
+
+            const response = await fetch('/describirImagen', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ imagePath })
+            });
+            const data = await response.json();
+
+            const processedImage = data.processedImage;
+            const description = await describeImage(processedImage);
+            //document.getElementById('description').textContent = JSON.stringify(description, null, 2);
+
+            // Encontrar la categoría con el valor más alto
+            const maxCategory = Object.keys(description).reduce((a, b) => description[a] > description[b] ? a : b);
+
+            // Modificar esta línea para mostrar solo el mayor valor
+            document.getElementById('description').textContent = `La imagen es un: ${maxCategory}`;
+
+        });
+    </script>
+</body>
+</html>
